@@ -209,4 +209,4 @@ if st.button("🎤 Read Full Dictation"):
     full_text = " ".join(dictation_sentences)
 
     speak(full_text)
-`
+
