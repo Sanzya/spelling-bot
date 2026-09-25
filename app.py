@@ -11,34 +11,35 @@ st.set_page_config(
     layout="wide"
 )
 
+# Make audio player smaller
+st.markdown("""
+<style>
+audio {
+    width: 250px;
+    height: 35px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # -------------------------------
 # TEXT TO SPEECH
 # -------------------------------
 
-from gtts import gTTS
-from io import BytesIO
-import base64
-import streamlit as st
-
 def speak(text):
-    tts = gTTS(text=text, lang="en", slow=False)
-
-    mp3 = BytesIO()
-    tts.write_to_fp(mp3)
-
-    audio_base64 = base64.b64encode(
-        mp3.getvalue()
-    ).decode()
-
-    st.markdown(
-        f"""
-     <audio autoplay>
-<source src="data:audio/mp3;
-        </audio>
-        """,
-        unsafe_allow_html=True
+    tts = gTTS(
+        text=text,
+        lang="en",
+        slow=False
     )
 
+    audio_buffer = BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+
+    st.audio(
+        audio_buffer.read(),
+        format="audio/mp3"
+    )
 
 # -------------------------------
 # SPELLING LISTS
@@ -182,11 +183,11 @@ with col2:
 with col3:
 
     if st.button("🔄 Restart Dictation"):
+
         st.session_state.current_sentence = 0
 
 st.info(
-    f"Sentence {st.session_state.current_sentence + 1} "
-    f"of {len(dictation_sentences)}"
+    f"Sentence {st.session_state.current_sentence + 1} of {len(dictation_sentences)}"
 )
 
 st.write(
@@ -208,3 +209,4 @@ if st.button("🎤 Read Full Dictation"):
     full_text = " ".join(dictation_sentences)
 
     speak(full_text)
+`
