@@ -32,8 +32,8 @@ def speak(text):
 
     st.markdown(
         f"""
-        <audio autoplay style="display:none">
-            data:audio/mp3;base64,{audio_base64}
+     <audio autoplay>
+<source src="data:audio/mp3;
         </audio>
         """,
         unsafe_allow_html=True
