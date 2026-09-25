@@ -2,6 +2,45 @@ import streamlit as st
 from gtts import gTTS
 from io import BytesIO
 
+st.markdown("""
+<style>
+
+/* Main background */
+.stApp {
+    background-color: #f8fafc;
+}
+
+/* Text input styling */
+.stTextInput input {
+    font-size: 24px !important;
+    text-align: center;
+    border-radius: 12px;
+}
+
+/* Buttons */
+.stButton > button {
+    background-color: #4f46e5;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+}
+
+.stButton > button:hover {
+    background-color: #3730a3;
+}
+
+/* Headers */
+h1 {
+    color: #1e3a8a;
+}
+
+h2 {
+    color: #2563eb;
+}
+
+</style>
+""", unsafe_allow_html=True)
 # -------------------------------
 # PAGE CONFIG
 # -------------------------------
