@@ -15,20 +15,28 @@ st.set_page_config(
 # TEXT TO SPEECH
 # -------------------------------
 
+from gtts import gTTS
+from io import BytesIO
+import base64
+import streamlit as st
+
 def speak(text):
-    tts = gTTS(
-        text=text,
-        lang="en",
-        slow=False
-    )
+    tts = gTTS(text=text, lang="en", slow=False)
 
-    audio_buffer = BytesIO()
-    tts.write_to_fp(audio_buffer)
-    audio_buffer.seek(0)
+    mp3 = BytesIO()
+    tts.write_to_fp(mp3)
 
-    st.audio(
-        audio_buffer.read(),
-        format="audio/mp3"
+    audio_base64 = base64.b64encode(
+        mp3.getvalue()
+    ).decode()
+
+    st.markdown(
+        f"""
+        <audio autoplay style="display:none">
+            data:audio/mp3;base64,{audio_base64}
+        </audio>
+        """,
+        unsafe_allow_html=True
     )
 
 
