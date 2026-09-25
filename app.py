@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="P2 Spelling Practice",
     layout="wide"
 )
-st.metric("⭐ Score", f"{score}/{total_words}")
+
 # Make audio player smaller
 st.markdown("""
 <style>
