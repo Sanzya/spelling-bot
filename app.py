@@ -1,6 +1,10 @@
-from flask import Flask, request
+import streamlit as st
 
-app = Flask(__name__)
+st.set_page_config(
+    page_title="GP Memory Coach",
+    page_icon="🎓",
+    layout="wide"
+)
 
 ESSAY = {
     1: {
