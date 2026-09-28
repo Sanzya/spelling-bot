@@ -1,7 +1,4 @@
 import streamlit as st
-from gtts import gTTS
-from io import BytesIO
-import base64
 import streamlit.components.v1 as components
 
 # -----------------------------------
@@ -14,28 +11,21 @@ st.set_page_config(
 )
 
 # -----------------------------------
-# SPEAK FUNCTION (NO AUDIO BAR)
+# SPEAK FUNCTION
 # -----------------------------------
 
 def speak(text):
-    tts = gTTS(
-        text=text,
-        lang="en",
-        slow=False
-    )
-
-    mp3_fp = BytesIO()
-    tts.write_to_fp(mp3_fp)
-
-    audio_base64 = base64.b64encode(
-        mp3_fp.getvalue()
-    ).decode()
-
     components.html(
         f"""
-        <audio autoplay>
-            data:audio/mp3;base64,{audio_base64}
-        </audio>
+        <script>
+        var msg = new SpeechSynthesisUtterance("{text}");
+        msg.rate = 0.85;
+        msg.pitch = 1;
+        msg.volume = 1;
+
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(msg);
+        </script>
         """,
         height=0,
     )
@@ -84,7 +74,7 @@ spelling_lists = {
 }
 
 # -----------------------------------
-# DICTATION SENTENCES
+# DICTATION
 # -----------------------------------
 
 dictation_sentences = [
@@ -109,7 +99,7 @@ selected_list = st.selectbox(
 words = spelling_lists[selected_list]
 
 # -----------------------------------
-# SPELLING SECTION
+# SPELLING PRACTICE
 # -----------------------------------
 
 st.header("✏️ Spelling Practice")
@@ -120,55 +110,59 @@ for i, word in enumerate(words):
 
     st.markdown(f"### Word {i+1}")
 
-    if st.button(
-        f"🔊 Say Word {i+1}",
-        key=f"say_word_{i}"
-    ):
-        speak(
-            f"The word is {word}. I repeat. {word}."
-        )
+    col1, col2 = st.columns([1, 3])
 
-    answer = st.text_input(
-        "Type your spelling",
-        key=f"spell_{i}"
-    )
+    with col1:
+        if st.button(
+            f"🔊 Say Word {i+1}",
+            key=f"say_word_{i}"
+        ):
+            speak(
+                f"The word is {word}. I repeat. {word}."
+            )
+
+    with col2:
+        answer = st.text_input(
+            "Type your spelling",
+            key=f"spell_{i}"
+        )
 
     if answer:
 
         if answer.strip().lower() == word.lower():
 
             st.success("✅ Correct")
-
             spelling_score += 1
 
         else:
 
             st.error("❌ Incorrect")
+            st.write(
+                f"Correct spelling: **{word}**"
+            )
 
 # -----------------------------------
-# SPELLING SCORE
+# SPELLING RESULT
 # -----------------------------------
 
 st.divider()
 
-st.subheader("🌟 Spelling Result")
+st.subheader("🌟 Spelling Score")
 
-st.progress(
-    spelling_score / len(words)
-)
+spelling_percent = spelling_score / len(words)
+
+st.progress(spelling_percent)
 
 st.write(
-    f"Score: {spelling_score}/{len(words)}"
+    f"Score: **{spelling_score}/{len(words)}**"
 )
 
-stars = round(
-    spelling_score / len(words) * 5
-)
+spelling_stars = round(spelling_percent * 5)
 
-st.write("⭐" * stars)
+st.write("⭐" * spelling_stars)
 
 # -----------------------------------
-# DICTATION SECTION
+# DICTATION
 # -----------------------------------
 
 st.divider()
@@ -183,34 +177,35 @@ for i, sentence in enumerate(dictation_sentences):
 
     if st.button(
         f"🔊 Read Sentence {i+1}",
-        key=f"dict_audio_{i}"
+        key=f"read_sentence_{i}"
     ):
         speak(sentence)
 
     user_answer = st.text_area(
         "Write the sentence",
-        key=f"dictation_answer_{i}",
+        key=f"dictation_{i}",
         height=80
     )
 
     if user_answer:
 
-        actual = (
+        correct = (
             sentence.lower()
             .replace(".", "")
+            .replace(",", "")
             .strip()
         )
 
         student = (
             user_answer.lower()
             .replace(".", "")
+            .replace(",", "")
             .strip()
         )
 
-        if student == actual:
+        if student == correct:
 
             st.success("✅ Correct")
-
             dictation_score += 1
 
         else:
@@ -223,28 +218,31 @@ for i, sentence in enumerate(dictation_sentences):
                 st.write(sentence)
 
 # -----------------------------------
-# DICTATION SCORE
+# DICTATION RESULT
 # -----------------------------------
 
 st.divider()
 
-st.subheader("🏆 Dictation Result")
+st.subheader("🏆 Dictation Score")
 
-st.progress(
+dictation_percent = (
     dictation_score /
     len(dictation_sentences)
 )
 
+st.progress(dictation_percent)
+
 st.write(
-    f"Score: {dictation_score}/{len(dictation_sentences)}"
+    f"Score: **{dictation_score}/{len(dictation_sentences)}**"
 )
 
 dictation_stars = round(
-    dictation_score /
-    len(dictation_sentences) * 5
+    dictation_percent * 5
 )
 
-st.write("⭐" * dictation_stars)
+st.write(
+    "⭐" * dictation_stars
+)
 
 # -----------------------------------
 # READ FULL DICTATION
@@ -261,12 +259,14 @@ if st.button("🎤 Read Full Dictation"):
     speak(full_text)
 
 # -----------------------------------
-# OVERALL RESULT
+# OVERALL SCORE
 # -----------------------------------
 
 st.divider()
 
-total_score = (
+st.header("🎯 Overall Achievement")
+
+total_correct = (
     spelling_score +
     dictation_score
 )
@@ -276,26 +276,25 @@ total_questions = (
     len(dictation_sentences)
 )
 
-st.header("🎯 Overall Achievement")
-
-st.progress(
-    total_score /
+overall_percent = (
+    total_correct /
     total_questions
 )
 
+st.progress(overall_percent)
+
 st.write(
-    f"Total Score: {total_score}/{total_questions}"
+    f"Total Score: **{total_correct}/{total_questions}**"
 )
 
 overall_stars = round(
-    total_score /
-    total_questions * 5
+    overall_percent * 5
 )
 
 st.write("⭐" * overall_stars)
 
-if total_score == total_questions:
+if total_correct == total_questions:
     st.balloons()
     st.success(
-        "🎉 Perfect Score! Excellent work!"
+        "🎉 PERFECT SCORE! Amazing work!"
     )
