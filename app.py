@@ -1,257 +1,302 @@
 import streamlit as st
+from gtts import gTTS
+from io import BytesIO
+
+# -----------------------------------
+# PAGE CONFIG
+# -----------------------------------
 
 st.set_page_config(
-    page_title="GP Memory Coach",
-    page_icon="🎓",
+    page_title="P2 Spelling Practice",
     layout="wide"
 )
 
-ESSAY = {
-    1: {
-        "title": "Introduction",
-        "text": """
-Main Thesis:
-Technology is deeply integrated into modern life and creates both benefits and risks.
-While society depends heavily on technology, humans are not completely at its mercy
-because people can regulate, adapt, and shape technological development.
+# -----------------------------------
+# TEXT TO SPEECH
+# -----------------------------------
 
-INTRODUCTION:
-The Times feature was premised on Manjoo's realisation that the companies are impossible
-to live without in the modern day. Technology has become an undeniable force in our lives,
-transforming communication, commerce, entertainment and education. This pervasive influence
-begs the question: to what extent are we at the mercy of technology?
-""",
-        "ideas": [
-            "technology",
-            "communication",
-            "commerce",
-            "education"
-        ]
-    },
-
-    2: {
-        "title": "Technology Empowers",
-        "text": """
-The relationship between humans and technology is complex, empowering us while also creating
-new dependencies. The internet has revolutionised access to information, allowing individuals
-worldwide to connect with vast knowledge resources. Educational materials are readily available
-online, democratising access to learning.
-""",
-        "ideas": [
-            "internet",
-            "information",
-            "worldwide",
-            "knowledge",
-            "learning"
-        ]
-    },
-
-    3: {
-        "title": "Communication Benefits",
-        "text": """
-Communication tools like video conferencing and instant messaging have shrunk geographical
-distances, fostering collaboration and personal connections across borders.
-""",
-        "ideas": [
-            "video conferencing",
-            "instant messaging",
-            "collaboration",
-            "communication"
-        ]
-    },
-
-    4: {
-        "title": "Quality of Life",
-        "text": """
-Technological advancements have improved quality of life. Artificial intelligence and
-automation reduce repetitive tasks. Medical technology has produced breakthroughs in
-diagnosis and treatment, while electric vehicles support sustainability.
-""",
-        "ideas": [
-            "artificial intelligence",
-            "automation",
-            "medical technology",
-            "electric vehicles"
-        ]
-    },
-
-    5: {
-        "title": "Vulnerabilities",
-        "text": """
-Dependence on technology creates vulnerabilities. Cybersecurity threats include data breaches,
-hacking and identity theft. Critical infrastructure can also be disrupted.
-""",
-        "ideas": [
-            "cybersecurity",
-            "data breaches",
-            "hacking",
-            "identity theft"
-        ]
-    },
-
-    6: {
-        "title": "Psychological Effects",
-        "text": """
-Technology can contribute to isolation, anxiety, depression and information overload.
-Social media also enables the spread of misinformation and disinformation.
-""",
-        "ideas": [
-            "social media",
-            "anxiety",
-            "isolation",
-            "disinformation"
-        ]
-    },
-
-    7: {
-        "title": "Human Control",
-        "text": """
-Humans cannot predict every consequence of technology. Nevertheless, society is not
-completely at technology's mercy because we can continually evaluate and adapt the way
-technology is used.
-""",
-        "ideas": [
-            "evaluate",
-            "adapt",
-            "society",
-            "control"
-        ]
-    },
-
-    8: {
-        "title": "Conclusion",
-        "text": """
-Engineers, policymakers and business leaders can implement policies and improvements that
-maximise benefits while minimising harm. Ultimately, humanity remains in control of how
-technology shapes society.
-""",
-        "ideas": [
-            "policymakers",
-            "engineers",
-            "regulation",
-            "society"
-        ]
-    }
-}
-
-TRANSFER_QUESTIONS = [
-    "Has technology improved our quality of life?",
-    "Are humans too dependent on technology?",
-    "Does technology connect or isolate people?",
-    "Should governments regulate technology?",
-    "Does social media do more harm than good?",
-    "Is AI a threat or an opportunity?"
-]
-
-
-st.title("🎓 GP 4-Day Memory Coach")
-
-paragraph_no = st.selectbox(
-    "Select Paragraph",
-    options=list(ESSAY.keys()),
-    format_func=lambda x: f"Paragraph {x} - {ESSAY[x]['title']}"
-)
-
-current = ESSAY[paragraph_no]
-
-st.subheader(f"Paragraph {paragraph_no}: {current['title']}")
-
-st.info(current["text"])
-
-st.subheader("Day 2 - Recall")
-
-answer = st.text_area(
-    "Write the paragraph from memory here:",
-    height=300
-)
-
-if st.button("Check My Answer"):
-
-    answer_lower = answer.lower()
-
-    found = []
-    missing = []
-
-    for idea in current["ideas"]:
-        first_word = idea.split()[0].lower()
-
-        if first_word in answer_lower:
-            found.append(idea)
-        else:
-            missing.append(idea)
-
-    coverage = int(
-        len(found) / len(current["ideas"]) * 100
+def speak(text):
+    tts = gTTS(
+        text=text,
+        lang="en",
+        slow=False
     )
 
-    if coverage >= 80:
-        content = 8
-    elif coverage >= 60:
-        content = 6
-    else:
-        content = 4
+    audio_buffer = BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
 
-    word_count = len(answer.split())
+    st.audio(
+        audio_buffer.read(),
+        format="audio/mp3"
+    )
 
-    if word_count >= 60:
-        analysis = 8
-    elif word_count >= 30:
-        analysis = 6
-    else:
-        analysis = 4
 
-    language = min(3 + len(found), 10)
+# -----------------------------------
+# SPELLING LISTS
+# -----------------------------------
 
-    total = content + analysis + language
+spelling_lists = {
+    "Spelling 19": [
+        "different",
+        "event",
+        "fabulous",
+        "flapped",
+        "furious",
+        "invitations",
+        "midnight",
+        "swooshing",
+        "thumped",
+        "wonderful"
+    ],
+    "Spelling 20": [
+        "decorated",
+        "everyone",
+        "feast",
+        "homemade",
+        "party",
+        "place",
+        "pranced",
+        "problem",
+        "stamped",
+        "swung"
+    ],
+    "Spelling 21": [
+        "bully",
+        "enclosure",
+        "extinct",
+        "hunt",
+        "intelligent",
+        "panicked",
+        "roam",
+        "scientists",
+        "stroll",
+        "terrifying"
+    ]
+}
 
-    if total >= 22:
-        grade = "A"
-    elif total >= 18:
-        grade = "B"
-    elif total >= 14:
-        grade = "C"
-    else:
-        grade = "D"
+# -----------------------------------
+# DICTATION
+# -----------------------------------
 
-    st.markdown("---")
-    st.subheader("📊 A-Level GP Analysis")
+dictation_sentences = [
+    "It was my eighth birthday.",
+    "I invited all my classmates to my party.",
+    "Everyone came and had a fabulous time.",
+    "They enjoyed the delicious food and games.",
+    "It was a wonderful day."
+]
 
-    col1, col2, col3, col4 = st.columns(4)
+# -----------------------------------
+# TITLE
+# -----------------------------------
 
-    col1.metric("Coverage", f"{coverage}%")
-    col2.metric("Content", f"{content}/10")
-    col3.metric("Analysis", f"{analysis}/10")
-    col4.metric("Language", f"{language}/10")
+st.title("📚 P2 Spelling & Dictation Practice")
 
-    st.success(f"Estimated GP Grade: {grade}")
+selected_list = st.selectbox(
+    "Choose Spelling List",
+    list(spelling_lists.keys())
+)
 
-    st.subheader("✅ Ideas Remembered")
+words = spelling_lists[selected_list]
 
-    if found:
-        for item in found:
-            st.write("•", item)
-    else:
-        st.write("None detected.")
+# -----------------------------------
+# SPELLING PRACTICE
+# -----------------------------------
 
-    st.subheader("❌ Missing Ideas")
+st.header("✏️ Spelling Practice")
 
-    if missing:
-        for item in missing:
-            st.write("•", item)
-    else:
-        st.write("Excellent recall!")
+score = 0
 
-    st.subheader("💡 Improvements")
+for i, word in enumerate(words):
 
-    st.write("• Add specific examples.")
-    st.write("• Include evaluation and judgment.")
-    st.write("• Develop deeper analysis.")
-    st.write("• Link back to the question.")
-    st.write("• Use stronger topic sentences.")
+    st.subheader(f"Word {i+1}")
 
-st.markdown("---")
+    col1, col2 = st.columns([1, 3])
 
-st.subheader("Day 4 - Transfer Questions")
+    with col1:
+        if st.button(
+            f"🔊 Say Word",
+            key=f"say_{i}"
+        ):
+            speak(
+                f"{word}. I repeat. {word}"
+            )
 
-for question in TRANSFER_QUESTIONS:
-    st.write("•", question)
+    with col2:
+
+        answer = st.text_input(
+            "Type the spelling here",
+            key=f"answer_{selected_list}_{i}"
+        )
+
+    if answer:
+
+        if answer.strip().lower() == word.lower():
+
+            st.success("✅ Correct")
+
+            score += 1
+
+        else:
+
+            st.error("❌ Incorrect")
+
+            st.caption(
+                f"Correct spelling: **{word}**"
+            )
+
+# -----------------------------------
+# SPELLING RESULT
+# -----------------------------------
+
+st.divider()
+
+star_count = round((score / len(words)) * 5)
+
+st.subheader("🌟 Spelling Score")
+
+st.progress(score / len(words))
+
+st.write(
+    f"Score: **{score}/{len(words)}**"
+)
+
+st.write(
+    "⭐" * star_count
+)
+
+if score == len(words):
+    st.balloons()
+    st.success("Amazing! Perfect score!")
+
+# -----------------------------------
+# DICTATION PRACTICE
+# -----------------------------------
+
+st.divider()
+
+st.header("📝 Dictation Practice")
+
+dictation_score = 0
+
+for i, sentence in enumerate(dictation_sentences):
+
+    st.subheader(
+        f"Sentence {i+1}"
+    )
+
+    if st.button(
+        f"🔊 Read Sentence {i+1}",
+        key=f"dictation_audio_{i}"
+    ):
+        speak(sentence)
+
+    user_sentence = st.text_area(
+        "Type what you hear",
+        key=f"dictation_{i}",
+        height=80
+    )
+
+    if user_sentence:
+
+        normalized_answer = (
+            user_sentence.strip()
+            .lower()
+            .replace(".", "")
+        )
+
+        normalized_sentence = (
+            sentence.strip()
+            .lower()
+            .replace(".", "")
+        )
+
+        if normalized_answer == normalized_sentence:
+
+            st.success("✅ Correct")
+
+            dictation_score += 1
+
+        else:
+
+            st.error("❌ Not quite right")
+
+            with st.expander(
+                "Show Correct Sentence"
+            ):
+                st.write(sentence)
+
+# -----------------------------------
+# DICTATION RESULT
+# -----------------------------------
+
+st.divider()
+
+st.subheader("🏆 Dictation Score")
+
+st.progress(
+    dictation_score /
+    len(dictation_sentences)
+)
+
+st.write(
+    f"Score: **{dictation_score}/{len(dictation_sentences)}**"
+)
+
+dictation_stars = round(
+    (dictation_score /
+     len(dictation_sentences)) * 5
+)
+
+st.write(
+    "⭐" * dictation_stars
+)
+
+# -----------------------------------
+# READ FULL DICTATION
+# -----------------------------------
+
+st.divider()
+
+if st.button("🎤 Read Full Dictation"):
+
+    full_text = " ".join(
+        dictation_sentences
+    )
+
+    speak(full_text)
+
+# -----------------------------------
+# OVERALL RESULT
+# -----------------------------------
+
+st.divider()
+
+total_correct = score + dictation_score
+total_questions = len(words) + len(dictation_sentences)
+
+st.header("🎯 Overall Achievement")
+
+st.progress(
+    total_correct / total_questions
+)
+
+st.write(
+    f"Total Score: **{total_correct}/{total_questions}**"
+)
+
+overall_stars = round(
+    (total_correct /
+     total_questions) * 5
+)
+
+st.write(
+    "⭐" * overall_stars
+)
+
+if total_correct == total_questions:
+    st.balloons()
+    st.success(
+        "🌟 PERFECT! You got everything correct!"
+    )
