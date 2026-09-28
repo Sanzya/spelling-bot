@@ -123,12 +123,10 @@ for i, word in enumerate(words):
 
     with col1:
         if st.button(
-            f"🔊 Say Word",
-            key=f"say_{i}"
-        ):
-            speak(
-                f"{word}. I repeat. {word}"
-            )
+    f"🔊 Say Word",
+    key=f"say_{i}"
+):
+    speak(f"{word}. I repeat. {word}")
 
     with col2:
 
