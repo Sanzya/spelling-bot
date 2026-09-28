@@ -14,20 +14,25 @@ st.set_page_config(
 # SPEAK FUNCTION
 # -----------------------------------
 
-def speak(text):
-    components.html(
-        f"""
-        <script>
-        var msg = new SpeechSynthesisUtterance("{text}");
-        msg.rate = 0.85;
-        msg.pitch = 1;
-        msg.volume = 1;
+from gtts import gTTS
+from io import BytesIO
+import streamlit as st
 
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(msg);
-        </script>
-        """,
-        height=0,
+def speak(text):
+    tts = gTTS(
+        text=text,
+        lang="en",
+        slow=False
+    )
+
+    audio_buffer = BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+
+    st.audio(
+        audio_buffer.read(),
+        format="audio/mp3",
+        autoplay=True
     )
 
 # -----------------------------------
