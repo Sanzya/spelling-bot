@@ -14,8 +14,8 @@ st.set_page_config(
 import streamlit as st
 
 st.set_page_config(
-    page_title="GP Memory Coach",
-    page_icon="🎓",
+    page_title="Spelling Bot",
+    page_icon="📚",
     layout="wide"
 )
 
